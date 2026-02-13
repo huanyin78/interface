@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>An Interface That Does Not Answer</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="stage" aria-live="polite">
+    <div class="panel">
+      <div class="label">INTERFACE</div>
+      <div id="line" class="line">The interface is ready.</div>
+      <div class="sub" id="sub">Click to continue.</div>
+
+      <div class="meta">
+        <span id="counter">0</span>
+        <span class="dot">·</span>
+        <span id="time">0s</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Cold, minimal, not conversational.
+    const lines = [
+      "Input received.",
+      "Acknowledged.",
+      "Request noted.",
+      "No response required.",
+      "No clarification will be issued.",
+      "This action has already been processed.",
+      "Nothing changes.",
+      "The interface remains available.",
+      "A reply is not part of this interaction.",
+      "You may continue.",
+      "You may stop.",
+      "Silence is also a state."
+    ];
+
+    const pauses = [0,0,0, 200,200, 400,400, 700, 1000, 1200];
+
+    let i = 0;
+    let clicks = 0;
+
+    const lineEl = document.getElementById("line");
+    const subEl = document.getElementById("sub");
+    const counterEl = document.getElementById("counter");
+    const timeEl = document.getElementById("time");
+
+    // Time on page = presence.
+    const start = Date.now();
+    setInterval(() => {
+      const s = Math.floor((Date.now() - start) / 1000);
+      timeEl.textContent = `${s}s`;
+    }, 250);
+
+    function next() {
+      clicks += 1;
+      counterEl.textContent = `${clicks}`;
+
+      // End state: only "..."
+      if (clicks >= 18) {
+        subEl.textContent = " ";
+        setTimeout(() => { lineEl.textContent = "..."; }, 600);
+        return;
+      }
+
+      const text = lines[i % lines.length];
+      const wait = pauses[Math.min(i, pauses.length - 1)];
+
+      subEl.textContent = " ";
+      setTimeout(() => {
+        lineEl.textContent = text;
+        subEl.textContent = " ";
+      }, wait);
+
+      i += 1;
+    }
+
+    // Click anywhere
+    document.addEventListener("click", next);
+
+    // Space/Enter also counts as input
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.code === "Enter") next();
+    });
+  </script>
+</body>
+</html>
